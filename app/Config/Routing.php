@@ -103,7 +103,7 @@ class Routing extends BaseRouting
      * The key is the first URI segment. The value is the controller namespace.
      * E.g.,
      *   [
-     *       'blog' => 'Acme\Blog\Controllers',
+     *       'blog' => 'Acme\Posts\Controllers',
      *   ]
      *
      * @var array [ uri_segment => namespace ]

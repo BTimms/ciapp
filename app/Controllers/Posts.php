@@ -13,5 +13,25 @@ class Posts extends Controller
         return view('posts/post',$data);
 
     }
+    public function create(){
+        helper('form');
+        $model = new PostModel();
+
+        if(! $this->validate([
+            'title' => 'required',
+            'body' =>'required'
+        ])){
+            return view('posts/create');
+        }else{
+            $model->save(
+                [
+                    'title' => $this->request->getVar('title'),
+                    'body' => $this->request->getVar('body'),
+                     'slug' => url_title($this->request->getVar('title'))
+                ]
+            );
+            return redirect()->to('/posts');
+        }
+    }
     // Additional methods for other pages can be added here
 }

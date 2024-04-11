@@ -2,15 +2,12 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-
-class Pages extends Controller
+class Pages extends BaseController
 {
     public function index()
     {
         // Load a view for the landing page
-        return view('pages/index');
+        return view('pages/landing');
     }
-
-    // Additional methods for other pages can be added here
 }
+

@@ -25,6 +25,7 @@
                 <small>Current Image: <?= esc($post['image_name']) ?></small>
                 <img src="/assets/images/<?= esc($post['image_name']) ?>" alt="Current Image" style="width: 100px;">
             </div>
+
             <button type="submit" class="btn btn-primary">Update Post</button>
         </form>
     </div>

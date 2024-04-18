@@ -7,30 +7,33 @@ use App\Models\PostModel;
 
 class PostsController extends BaseController
 {
-    // Assume $user_id is set to the logged-in user's ID
+    // Private variable to store the user's ID
     private $user_id;
 
-    public function __construct()
-    {
-        // Ensure you have session started and user logged in
+    // Constructor to initialize the user's ID from session
+    public function __construct() {
+        // Ensure session is started and user is logged in
         $session = session();
         $this->user_id = $session->get('user_id');
     }
 
+    // Method for displaying all posts
     public function index()
     {
         $postModel = new PostModel();
-        $data['posts'] = $postModel->getPostsWithUsers(); // Ensure this method returns the correct data
+        // Retrieve posts along with their associated users
+        $data['posts'] = $postModel->getPostsWithUsers();
 
         return view('posts/index', $data);
     }
 
-
+    // Method for displaying the edit form for a post
     public function edit($id)
     {
         $model = new PostModel();
         $post = $model->find($id);
 
+        // Check if post exists and user is authorized to edit it
         if (!$post || $post['user_id'] != session()->get('id')) {
             return redirect()->to('/posts')->with('error', 'Unauthorized access or post not found');
         }
@@ -38,15 +41,18 @@ class PostsController extends BaseController
         return view('posts/edit', ['post' => $post]);
     }
 
+    // Method for deleting a post
     public function delete($id)
     {
         $postModel = new PostModel();
         $post = $postModel->find($id);
 
+        // Check if post exists and user is authorized to delete it
         if (!$post || $post['user_id'] != session()->get('id')) {
             return redirect()->to('/posts')->with('error', 'Unauthorized access to delete the post');
         }
 
+        // Attempt to delete the post
         if ($postModel->delete($id)) {
             return redirect()->to('/posts')->with('message', 'Post deleted successfully');
         } else {
@@ -54,23 +60,24 @@ class PostsController extends BaseController
         }
     }
 
-    // Other controller methods...
+    // Method for displaying the form to create a new post
     public function create()
     {
+        // Redirect to login page if user is not logged in
         if (!session()->get('isLoggedIn')) {
             return redirect()->to('/login');
         }
 
-        // Continue with create post logic
         return view('posts/create');
     }
 
+    // Method for storing a newly created post
     public function store()
     {
         helper(['form', 'url']);
         $model = new PostModel();
 
-        // Basic validation
+        // Basic validation for post data
         if (!$this->validate([
             'title' => 'required|min_length[3]',
             'body' => 'required',
@@ -91,21 +98,20 @@ class PostsController extends BaseController
             if ($file->move('assets/images/', $imageName)) {
                 $data['image_name'] = $imageName;
             } else {
-                log_message('error', 'Image upload failed. Error: ' . $file->getErrorString());
                 // Handle error in file upload
                 return redirect()->back()->withInput()->with('error', 'Could not upload image.');
             }
         }
-        log_message('info', 'Data to be saved: ' . print_r($data, true));
+
+        // Save the post data
         if ($model->save($data)) {
             return redirect()->to('/posts')->with('message', 'Post created successfully.');
         } else {
-            log_message('error', 'Post saving failed. Errors: ' . print_r($model->errors(), true));
             return redirect()->back()->withInput()->with('errors', $model->errors());
         }
     }
 
-
+    // Method for displaying a single post
     public function show($id)
     {
         $postModel = new PostModel();
@@ -115,6 +121,7 @@ class PostsController extends BaseController
             ->where('posts.id', $id)
             ->first();
 
+        // If post not found, throw a 404 error
         if (!$post) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Post not found');
         }
@@ -122,12 +129,13 @@ class PostsController extends BaseController
         return view('posts/show', ['post' => $post]);
     }
 
+    // Method for updating a post
     public function update($id)
     {
         $postModel = new PostModel();
         $post = $postModel->find($id);
 
-        // Basic validation
+        // Basic validation for post data
         $data = [
             'title' => $this->request->getPost('title'),
             'body' => $this->request->getPost('body'),
@@ -149,10 +157,25 @@ class PostsController extends BaseController
             }
         }
 
+        // Attempt to update the post
         if ($postModel->update($id, $data)) {
             return redirect()->to('/posts')->with('message', 'Post updated successfully.');
         } else {
             return redirect()->back()->withInput()->with('errors', $postModel->errors());
         }
+    }
+
+    // Method for displaying the dashboard with user's posts
+    public function dashboard()
+    {
+        $postModel = new PostModel();
+        $data['posts'] = $postModel
+            ->select('posts.*, users.name as user_name')
+            ->join('users', 'posts.user_id = users.id')
+            ->where('posts.user_id', session()->get('id'))
+            ->orderBy('posts.created_at', 'DESC')
+            ->findAll();
+
+        return view('posts/dashboard', $data);
     }
 }

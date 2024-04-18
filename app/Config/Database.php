@@ -50,24 +50,23 @@ class Database extends Config
      * running PHPUnit database tests.
      */
     public array $tests = [
-        'DSN'         => '',
-        'hostname'    => '127.0.0.1',
-        'username'    => '',
-        'password'    => '',
-        'database'    => ':memory:',
-        'DBDriver'    => 'SQLite3',
-        'DBPrefix'    => 'db_',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE FOR CI DEVS
-        'pConnect'    => false,
-        'DBDebug'     => true,
-        'charset'     => 'utf8',
-        'DBCollat'    => 'utf8_general_ci',
-        'swapPre'     => '',
-        'encrypt'     => false,
-        'compress'    => false,
-        'strictOn'    => false,
-        'failover'    => [],
-        'port'        => 3306,
-        'foreignKeys' => true,
+        'DSN'      => '',
+        'hostname' => '', // Not needed for SQLite
+        'username' => '', // Not needed for SQLite
+        'password' => '', // Not needed for SQLite
+        'database' => 'C:/xampp/htdocs/ciapp/tests/tests.sqlite', // Full path to SQLite file
+        'DBDriver' => 'SQLite3',
+        'DBPrefix' => '', // Adjust if tables do not use a 'db_' prefix
+        'pConnect' => false,
+        'DBDebug'  => (ENVIRONMENT !== 'production'),
+        'charset'  => 'utf8',
+        'DBCollat' => 'utf8_general_ci',
+        'swapPre'  => '',
+        'encrypt'  => false,
+        'compress' => false,
+        'strictOn' => false,
+        'failover' => [],
+        'foreignKeys' => true, // Ensure foreign key constraints for SQLite are enabled if needed
         'busyTimeout' => 1000,
     ];
 

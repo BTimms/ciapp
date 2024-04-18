@@ -1,0 +1,45 @@
+# Disable directory browsing
+Options -Indexes
+
+# ----------------------------------------------------------------------
+# Rewrite engine
+# ----------------------------------------------------------------------
+# Turning on the rewrite engine is necessary for the following rules and features.
+# FollowSymLinks must be enabled for this to work.
+
+<IfModule mod_rewrite.c>
+    Options +FollowSymlinks
+    RewriteEngine On
+
+    # If you installed CodeIgniter in a subfolder, you will need to
+    # change the following line to match the subfolder you need.
+    # CodeIgniter is accessible via http://localhost/ciapp/public/
+    RewriteBase /ciapp/public/
+
+    # Redirect Trailing Slashes...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Rewrite www.example.com -> example.com
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+
+    # Send all non-existing file or directory requests to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+
+    # Ensure Authorization header is passed along
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    # If mod_rewrite is not installed, use index.php as a fallback:
+    ErrorDocument 404 /ciapp/public/index.php
+</IfModule>
+
+# Disable server signature
+ServerSignature Off

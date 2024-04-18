@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
     <div class="container">
-        <a href="<?= site_url('posts') ?>" class="btn btn-primary mb-3"><-Back to Posts</a>
+        <a href="<?= site_url('posts') ?>" class="btn btn-primary mb-3"><-- Back to Posts</a>
         <h1>Dashboard</h1>
         <?php if (!empty($posts)): ?>
             <div class="list-group">
@@ -11,8 +11,8 @@
                         <div class="d-flex w-100 justify-content-between">
                             <div>
                                 <h5 class="mb-1"><?= esc($post['title']) ?></h5>
-                                <p class="mb-1"><?= esc(substr($post['body'], 0, 100)) ?>...</p>
                                 <small>Posted on <?= date('d M Y', strtotime($post['created_at'])) ?> by <?= esc($post['user_name']) ?></small>
+                                <p class="mb-1"><?= esc(substr($post['body'], 0, 100)) ?>...</p>                                
                             </div>
                             <small class="text-muted">
                                 <a href="<?= site_url('posts/edit/' . $post['id']) ?>" class="btn btn-primary">Edit</a>
